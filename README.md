@@ -1,1 +1,1 @@
-Here is the my some tasks and projects.
+Here i share some tasks and projects that i coded.
