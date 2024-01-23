@@ -43,33 +43,20 @@ def capture(row, colum, direction=None, add=True):
         capture(row + 1, colum - 1, "bl", add)
         capture(row + 1, colum + 1, "br", add)
 
-def n_king(n):
-    colum = 0
-    king_row = np.zeros(n, dtype=int)
+def n_king(n, kings, colum=0, kings_last_row=np.full(n, -1)):
+    if colum >= n:
+        return pd.DataFrame(kings)
+    for row in range(n):
+        if captured_places[row, colum] == 0 and kings_last_row[colum] < row:
+            kings[row, colum] = 1
+            capture(row, colum)
+            kings_last_row[colum] = row
+            return n_king(n, kings, colum+1, kings_last_row)
+        elif row == n-1:
+            kings_last_row[colum] = -1
+            colum -= 1
+            kings[kings_last_row[colum]] = 0
+            capture(kings_last_row[colum], colum, add=False)
+            return n_king(n, kings, colum, kings_last_row)
 
-    while colum < n:
-        for row in range(n):
-            if captured_places[row, colum] == 0 and kings[row, colum] == 0:
-                kings[row, colum] = 1
-                capture(row, colum)
-                king_row[colum] = row
-                colum += 1
-                break
-            elif row == n-1:
-                kings[:, colum:] = 0
-                colum -= 1
-                kings[king_row[colum], colum] = -1
-                capture(king_row[colum], colum, add=False)
-            else:
-                kings[row, colum] = -1
-
-    # print(king_row)
-    print(kings)
-    kings[kings == -1] = 0
-    print(kings)
-    print(captured_places)
-    print(pd.DataFrame(kings))
-
-    print('----------------')
-
-n_king(n)
+n_king(n, kings)
